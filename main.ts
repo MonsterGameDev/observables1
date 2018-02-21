@@ -1,5 +1,108 @@
-//Eksempel 4: GETTING READY TO RECEIVE DATA FROM XMLHTTPREQUEST
+//Eksempel 5: NU MED OBSERVER
+import { Observable } from 'rxjs';
 
+let button = document.getElementById('button');
+let click = Observable.fromEvent (button, 'click')
+
+function get(url: string) {
+    return Observable.create(observer => {
+        let xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = () => {
+            if( xhr.readyState === 4 && xhr.status === 200)
+            {
+                observer.next(JSON.parse(xhr.responseText));
+                observer.complete();
+            }
+        } 
+
+        xhr.open("GET", url);
+        xhr.send();
+    });
+    
+
+
+    
+}
+
+function renderMovies(movies){
+    movies.forEach(element => {
+        let div = document.createElement("div");
+        div.innerHTML = element.title
+        document.getElementById('output')
+            .appendChild(div);
+            
+    });
+}
+
+//LAZY: get('movies.json') kontra: get('movies.json').subscribe(renderMovies) ; - sidste loader når siden loader
+
+//clik er i forven en observable så val bliver af typen Observable - eftersom get returnerer en sådan
+//click.map(e => get('movies.json')).subscribe(val => console.log(val))
+//skal man have den inner observable i tale
+click.flatMap(e => get('movies.json'))
+    .subscribe(renderMovies,  //shorthand for: .subscribe(val => renderMovies(val));
+        e => console.log(e),
+        () => console.log("complete")
+);
+
+
+
+// click.subscribe (
+//     value => get('movies.json'),
+//     e => console.log(e),
+//     () => console.log('complete')
+
+// );
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+// //Eksempel 4: GETTING READY TO RECEIVE DATA FROM XMLHTTPREQUEST
+    // import { Observable } from 'rxjs';
+
+    // let outputArea = document.getElementById('output');
+    // let button = document.getElementById('button');
+
+    // //OBSERVABLE
+    // //var source = Observable.fromEvent(button, "click");
+    // var click = Observable.fromEvent(button, "click");
+
+
+
+
+    // //OBSERVER
+    // function load(url: string) {
+    //     let xhr = new XMLHttpRequest();
+    //     // //Event: load
+    //     // xhr.addEventListener("load", () => {
+    //     //     let txtResp = xhr.responseText;
+    //     //     console.log(txtResp);
+    //     // });
+        
+    //     xhr.onreadystatechange = () => {
+    //         if(xhr.readyState === 4 && xhr.status === 200)
+    //         {
+    //             console.log (xhr.responseText);
+
+    //             //let movies = JSON.parse(txtResp);
+    //             //movies.foreach..
+    //         }
+    //     }
+
+    //     xhr.open("GET", url);
+    //     xhr.send();
+
+    // }
+
+    // const url: string = 'movies.json';
+    // click.subscribe(
+    //     data => load(url),
+    //     e => console.log(e),
+    //     () => console.log('complete')
+    // )
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
 // //Eksempel 3: TRAILING CIRCLE - CHECK HTML I INDEX
@@ -66,6 +169,7 @@
 
 
 
+
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //MODULE 2
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -110,10 +214,10 @@
 
 
 // //Eksempel 5: LONGRUNNING
-    // // /*
-    // // Simulering af async kald
-    // // */
-    //  import { Observable, Observer } from 'rxjs';
+    // /*
+    // Simulering af async kald
+    // */
+    //  import { Observable } from 'rxjs';
 
     //  let numbers = [1, 5, 10];
     //  let source = Observable.create(observer => {
@@ -154,7 +258,7 @@
     // /*
     // Oberservable´s create metode giver os større kontrol over hvordan og hvornår eventen trigges
     // */
-    // import { Observable, Observer } from 'rxjs';
+    // import { Observable } from 'rxjs';
 
     // let numbers = [1, 5, 10];
     // let source = Observable.create(observer => {
